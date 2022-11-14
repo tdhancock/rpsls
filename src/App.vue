@@ -1,9 +1,12 @@
 <template>
-  <nav>
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
-  </nav>
-  <router-view/>
+  <body class="">
+    <nav class="bg-sky-300 rounded m-5">
+      <router-link to="/">Login</router-link> |
+      <router-link to="/world">World View</router-link> |
+      <router-link to="/room">Room</router-link>
+    </nav>
+    <router-view/>
+  </body>
 </template>
 
 <style>
@@ -25,6 +28,6 @@ nav a {
 }
 
 nav a.router-link-exact-active {
-  color: #42b983;
+  color: rgb(14 165 233);
 }
 </style>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+<!-- <script src="https://cdn.tailwindcss.com"></script> -->
+</head>
+<body>
+    <div class="flex w-full justify-center items-center">
+        <img id="choice" class="w-1/12">
+    </div>
+    <form action="submit" class="flex-row">
+        <div class="flex justify-center items-center content-center">
+
+            <input type="radio" id="rock" value="rock" name="rpslsBtn" class="sr-only peer hidden">
+            <label for="rock" class="peer-checked w-1/3"><img src="./images/rock.png" alt="" class="w-1/4 h-1/2"></label>
+    
+            <input type="radio" id="paper" value="paper" name="rpslsBtn" class="sr-only peer hidden">
+            <label for="paper" class="peer-checked w-1/3"><img src="./images/paper.png" alt="" class="w-1/4 h-1/2 "></label>
+    
+            <input type="radio" id="scissors" value="scissors" name="rpslsBtn" class="sr-only peer hidden">
+            <label for="scissors" class="peer-checked w-1/3"><img src="./images/scissors.png" alt="" class="w-1/4 h-1/2 "></label>
+        </div>
+        <div class="flex w-full justify-center items-center">
+
+            <input type="text" id="comments" class="w-full border-2 border-sky-500 rounded">
+            <input type="submit" value="Submit" class="bg-gray-300 rounded">
+        </div>
+    </form>
+    <script>
+        document.getElementsByTagName("form");
+        document.addEventListener("submit", (e) =>{
+            e.preventDefault()
+            let checked;
+            console.log("Submit worked")
+            var inp = document.getElementsByName("rpslsBtn");
+            for(i=0;i<inp.length;i++){
+                if(inp[i].checked){
+                    console.log(inp[i])
+                    checked = inp[i].getAttribute("value");
+                }
+            }
+            console.log(checked)
+            let comment = document.getElementById("comments").value;
+            console.log(comment)
+        })
+
+        let radios = document.getElementsByName("rpslsBtn");
+        let choice = document.getElementById("choice");
+        let images = {"rock" : "./images/rock.png", "paper" : "./images/paper.png", "scissors": "./images/scissors.png"}
+        for(i=0;i<radios.length;i++){
+            radios[i].onclick = function (e) {
+                console.log(e.target.id)
+                //choice.removeAttribute("src")
+                console.log(images[e.target.id])
+                choice.setAttribute("src", images[e.target.id])
+            }
+        }
+    </script>
+</body>
+</html>
