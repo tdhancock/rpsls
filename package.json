@@ -18,10 +18,13 @@
     "mongoose": "^6.7.0",
     "nodemon": "^2.0.20",
     "pinia": "^2.0.23",
+    "shepherd.js": "^11.0.1",
     "socket.io": "^4.5.3",
     "socket.io-client": "^4.5.3",
     "vue": "^3.2.13",
-    "vue-router": "^4.0.3"
+    "vue-router": "^4.0.3",
+    "vue-shepherd": "^2.0.1",
+    "vue-tour": "^2.0.0"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~5.0.0",

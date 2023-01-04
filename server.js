@@ -115,7 +115,13 @@ io.on('connection', (socket) => {
             addWinLoss(choices[room].choice2id, choices[room].choice1id)
           }
           choices[room] = {choice1id: null, choice1: null, choice2id: null, choice2: null}
-          rooms.pop({id:room})
+          for (let i = 0; i < rooms.length; i++){
+            if (rooms[i].id == id){
+              rooms.splice(i,1)
+            }
+          }
+          //rooms.pop({id:room})
+          console.log(rooms)
           //console.log("Rooms after removing current room")
           //console.log(rooms)
           io.in(room).socketsLeave(room);

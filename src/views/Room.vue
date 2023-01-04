@@ -1,17 +1,17 @@
 <template>
-  <div class="flex flex-col bg-sky-300 rounded m-5 p-5">
-    <h1 class="text-4xl m-3">{{roomOwner}}'s Room</h1>
+  <div class="items-center justify-center flex flex-col bg-sky-300 rounded-3xl m-5 w-3/4 m-auto mt-5 mb-5 h-full">
+    <!-- <div class="flex rounded-3xl bg-white m-3 flex-wrap items-center justify-center border-2 border-sky-800 p-3 w-3/5">
+      <h1 class='p-3 text-3xl text-sky-800'>{{displayName}}</h1>
+      <h2 class='p-3 text-lg'>Wins: {{wins}}</h2>
+      <h2 class='p-3 text-lg'>Losses: {{losses}}</h2>
+    </div> -->
+    <h1 class='m-3 mt-5 text-4xl text-sky-800 rounded-3xl bg-white p-5'>{{roomOwner}}'s Room</h1>
       <div class="items-center flex flex-row justify-center flex-wrap ">
-        <div class="flex rounded bg-gray-300 p-5 m-5 items-center flex-row border-2 border-sky-500">
-          <h1 class='p-3 text-lg text-[#42b983]'>{{displayName}}</h1>
-          <h2 class='p-3 text-sm'>Wins: {{wins}}</h2>
-          <h2 class='p-3 text-sm'>Losses: {{losses}}</h2>
-        </div>
           <div class="flex w-full justify-center items-center m-5">
           <img :src="imageSrc" class="w-1/8">
           </div>
-          <form action="submit" class="flex-row">
-              <div class="flex justify-center items-center content-center m-5">
+          <form action="submit" class="flex flex-col justify-center items-center">
+              <div class="flex justify-center items-center my-5 ml-20" ref="select">
 
                   <input type="radio" value="rock" ref="rpslsBtn" class="sr-only peer hidden">
                   <label for="rock" class="peer-checked w-1/3"><img src="./images/rock.png" alt="" class="w-1/2 h-1/3" @click="radioButtonChange" id="rock"></label>
@@ -28,19 +28,20 @@
                   <input type="radio" id="spock" value="spock" name="rpslsBtn" class="sr-only peer hidden">
                   <label for="spock" class="peer-checked w-1/3"><img src="./images/spock.png" alt="" class="w-1/2 h-1/2 " id="spock" @click="radioButtonChange"></label>
               </div>
-              <div class="flex w-full justify-center items-center">
+              <div class="flex w-full justify-center items-center mb-5">
 
-                  <input type="text" id="comments" v-model="newComment" class="w-full border-2 border-sky-500 rounded p-3">
-                  <input @click="submitForm" type="submit" value="Submit" class="button rounded bg-gray-300 p-3 m-3 w-full hover:bg-sky-500 border-2 border-sky-500">
+                  <input type="text" id="comments" v-model="newComment" class="border-solid border-2 border-sky-800 rounded-2xl p-3 w-full" ref="text">
+                  <input @click="submitForm" type="submit" value="Submit" class="button rounded-3xl bg-sky-800 p-3 my-3 ml-3 hover:bg-sky-500 w-full text-sky-100 hover:text-sky-100 text-2xl" ref="sb">
               </div>
             </form>
       </div>
   </div>
 </template>
 
-<script>
+<script >
   import router from '@/router';
   import SocketioService from '../services/socketio.service.js';
+  import { useShepherd } from 'vue-shepherd'
   export default{
     name: 'Room',
     data() {
@@ -224,30 +225,76 @@
       this.joinRoom(sessionStorage.getItem("room"))
 
       this.socket.on('rpsls', function(msg) {
+        tour.removeStep("curr-step")
+        let player1name = sessionStorage.getItem("player1name")
+        let player2name = sessionStorage.getItem("player2name")
+        let dispName = sessionStorage.getItem("displayName")
+        let myName;
+        let oppName
+        if(player1name == dispName){
+          myName = player1name;
+          oppName = player2name;
+        }else{
+          myName = player2name;
+          oppName = player1name;
+        }
+        let tourText;
         if(msg[0] == 7){
-          alert(" TIE GAME!")
+          tourText = `<div class='flex flex-col justify-center items-center'><h1 class='text-4xl m-3'>${myName} tied with ${oppName}</h1><p class='text-xl m-3'>Good Game :)</p></div>`
+          //alert("TIE GAME!")
           clearItems()
           router.push({name: 'world'})
-        }
-        let decArray = processVerdict(msg)
-        let id = sessionStorage.getItem("id")
+        }else{
+          let decArray = processVerdict(msg)
+          let id = sessionStorage.getItem("id")
           if(decArray[0]==id){
-            alert(decArray[4] + " YOU WIN!")
+            tourText = `<div class='flex flex-col justify-center items-center'><h1 class='text-4xl m-3'>${myName} defeated ${oppName}</h1><h2 class='text-2xl m-3'>${decArray[4]}</h2><p class='text-xl m-3'>You Win :)</p></div>`
+            //tourText = decArray[4] + " YOU WIN!"
+            //alert(decArray[4] + " YOU WIN!")
             let wins = sessionStorage.getItem("wins");
             sessionStorage.setItem("wins", parseInt(wins) + 1);
             clearItems()
             router.push({name: 'world'})
           }else if (decArray[2]==id){
-            alert(decArray[4] + " YOU LOST!")
-            let losses = sessionStorage.getItem("losses");
-            sessionStorage.setItem("losses", parseInt(losses) + 1);
-            clearItems()
-            router.push({name: 'world'})
-          }
-      });
-
-      this.socket.on("comment", function(msg){
-        alert(`${msg[0]} says: ${msg[1]}`)
+            tourText = `<div class='flex flex-col justify-center items-center'><h1 class='text-4xl m-3'>${oppName} defeated ${myName}</h1><h2 class='text-2xl m-3'>${decArray[4]}</h2><p class='text-xl m-3'>You Lose :(</p></div>`
+            //tourText = decArray[4] + " YOU LOST!"
+            //alert(decArray[4] + " YOU LOST!")
+              let losses = sessionStorage.getItem("losses");
+              sessionStorage.setItem("losses", parseInt(losses) + 1);
+              clearItems()
+              router.push({name: 'world'})
+            }
+        }
+          tour.addStep({
+          id: 'curr-step',
+          text: tourText,
+          attachTo: {
+            element: 'email',
+            on: 'right'
+          },
+          classes: 'bg-sky-500 rounded-xl p-3 text-sky-100 w-1/2 h-1/2 text-4xl flex justify-center items-center mt-5',
+          buttons: [
+            {
+              text: 'Next',
+              action: tour.next,
+              classes: 'bg-sky-800 rounded-xl p-5 m-5 hover:bg-sky-300 hover:text-sky-800 fixed bottom-0 right-0'
+            }
+          ]
+        });
+          tour.start();
+        });
+        
+        this.socket.on("comment", function(msg){
+          //alert(`${msg[0]} says: ${msg[1]}`)
+          Notification.requestPermission().then(perm => {
+            if(perm === 'granted'){
+              console.log("here")
+              const notif = new Notification(`${msg[0]} says:`, {
+                body: `${msg[1]}`,
+                silent: true
+            });
+        }
+    })
       })
 
       this.socket.on('gameUpdate', function(ROOM) {
@@ -255,6 +302,8 @@
         sessionStorage.setItem("roomOwner", ROOM.player1.displayName);
         sessionStorage.setItem("player2", ROOM.player2.id)
         sessionStorage.setItem("player1", ROOM.player1.id)
+        sessionStorage.setItem("player2name", ROOM.player2.displayName)
+        sessionStorage.setItem("player1name", ROOM.player1.displayName)
       })
 
       function clearItems(){
@@ -350,6 +399,69 @@
       return retArray;
     }
     },
+    mounted() {
+      if(sessionStorage.getItem("roomTour") == "false"){
+        vueTour.removeStep("1")
+        vueTour.removeStep("2")
+        vueTour.removeStep("3")
+        vueTour.addStep({
+              id: '1',
+              attachTo: { element: this.$refs.select, on: 'right' },
+              text: 'This is where you select your move. Selected move will appear above.',
+              classes: 'rounded-xl bg-white p-5 m-5 w-1/6 h-1/6',
+              buttons: [
+                {
+                  text: 'Next',
+                  action: vueTour.next,
+                  classes: 'bg-sky-800 rounded-xl p-5 m-5 hover:bg-sky-300 hover:text-sky-800 fixed bottom-0 right-0'
+                }
+              ]
+            });
+            vueTour.addStep({
+              id: '2',
+              attachTo: { element: this.$refs.text, on: 'bottom' },
+              text: 'You can enter comments to send to your opponenent here',
+              classes: 'rounded-xl bg-white p-5 m-5 w-1/6 h-1/6',
+              buttons: [
+                {
+                  text: 'Next',
+                  action: vueTour.next,
+                  classes: 'bg-sky-800 rounded-xl p-5 m-5 hover:bg-sky-300 hover:text-sky-800 fixed bottom-0 right-0'
+                }
+              ]
+            });
+            vueTour.addStep({
+              id: '3',
+              attachTo: { element: this.$refs.sb, on: 'bottom' },
+              text: 'Press this button to submit any text or moves!',
+              classes: 'rounded-xl bg-white p-5 m-5 w-1/6 h-1/6',
+              buttons: [
+                {
+                  text: 'Next',
+                  action: vueTour.next,
+                  classes: 'bg-sky-800 rounded-xl p-5 m-5 hover:bg-sky-300 hover:text-sky-800 fixed bottom-0 right-0'
+                }
+              ]
+            });
+  
+            vueTour.start();
+            sessionStorage.setItem("roomTour", "true")
+      }
+    }
   };
+
+  import Shepherd from 'shepherd.js';
+
+  const tour = new Shepherd.Tour({
+  useModalOverlay: true,
+  defaultStepOptions: {
+    classes: 'shepherd-theme-custom'
+  }
+});
+
+const vueTour = useShepherd({
+    useModalOverlay: true
+  });
+  
 
 </script>

@@ -1,19 +1,15 @@
 <template>
-  <div id="roomsDiv" class="items-center flex flex-col bg-sky-300 rounded m-5">
-    <!-- <h1>Login</h1> -->
-    <h2 class="text-xl pt-5 m-3">Display Name (Only needed for registration)</h2>
-    <input placeholder="Enter Name" ref="dispName" class="border-solid border-2 border-sky-500 rounded p-3 w-1/3"/>
+  <div id="roomsDiv" class="items-center justify-center flex flex-col bg-sky-300 rounded-3xl m-5 w-3/4 m-auto mt-5 mb-5 h-full">
+    <h1 class="text-3xl p-3 text-sky-800 font-extrabold justify-left">Login or Register here!</h1>
+    <input id='dispName' placeholder="Display Name (Only needed for registration)" ref="dispName" class="border-solid border-2 mt-5 border-sky-800 rounded-2xl p-3 w-1/2"/>
     <br/><br/>
-    <p class="text-xl m-1 text-left">Email</p>
-    <input placeholder="Enter Email" ref="email" class="border-solid border-2 border-sky-500 rounded p-3 w-1/3">
+    <input placeholder="Email" ref="email" class="border-solid border-2 border-sky-800 rounded-2xl p-3 w-1/2">
     <br/><br/>
-    <h2 class="text-xl m-1">Password</h2>
-    <input placeholder="Enter Password" type="password" ref="pass" class="border-solid border-2 border-sky-500 rounded p-3 w-1/3">
+    <input placeholder="Password" type="password" ref="pass" class="border-solid border-2 border-sky-800 rounded-2xl p-3 w-1/2">
     <br/><br/>
-    <div class="flex-row">
-
-      <button @click="login" class="button rounded bg-gray-300 p-3 m-3 hover:bg-sky-500 border-2 border-sky-500">Login</button>
-      <button @click="createAccount" class="button rounded bg-gray-300 p-3 m-3 hover:bg-sky-500 border-2 border-sky-500">Create Account</button>
+    <div class="flex flex-row w-1/2 mb-5">
+      <button @click="login" class="button rounded-3xl bg-sky-800 p-3 my-3 mr-3 hover:bg-sky-500 w-full text-sky-100 hover:text-sky-100 text-2xl">Login</button>
+      <button @click="createAccount" class="button rounded-3xl bg-sky-800 p-3 my-3 ml-3 hover:bg-sky-500 w-full text-sky-100 hover:text-sky-100 text-2xl">Create Account</button>
     </div>
     
   </div>
@@ -22,6 +18,7 @@
 <script>
 import router from '@/router';
 import axios from 'axios';
+import Shepherd from 'shepherd.js';
 export default {
   name: 'Login',
   components: {
@@ -51,6 +48,8 @@ export default {
         sessionStorage.setItem("email", player.email)
         sessionStorage.setItem("losses", player.losses);
         //Automatically move on to the rooms page
+        sessionStorage.setItem("tour", "false")
+        sessionStorage.setItem("roomTour", "false")
         router.push({name: 'world'})
       }else{
         alert("No user with these credentials")
@@ -74,8 +73,34 @@ export default {
       router.push({name: 'world'})
     }
   },
-  mounted(){
-    sessionStorage.clear()
+  async mounted(){
+    await sessionStorage.clear()
   }
 }
+
+// const tour = new Shepherd.Tour({
+//   useModalOverlay: true,
+//   defaultStepOptions: {
+//     classes: 'shadow-md bg-purple-dark',
+//     scrollTo: true
+//   }
+// });
+
+// tour.addStep({
+//   id: 'example-step',
+//   text: 'This step is attached to the bottom of the <code>.example-css-selector</code> element.',
+//   attachTo: {
+//     element: 'email',
+//     on: 'right'
+//   },
+//   classes: 'bg-sky-800 rounded-xl p-3 text-sky-100',
+//   buttons: [
+//     {
+//       text: 'Next',
+//       action: tour.next
+//     }
+//   ]
+// });
+
+// tour.start();
 </script>

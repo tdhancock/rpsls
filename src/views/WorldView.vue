@@ -1,19 +1,28 @@
 <template>
-  <div id="roomsDiv" class="items-center flex flex-col bg-sky-300 rounded m-5">
-    <div class="rounded bg-gray-300 m-3 flex-wrap items-center w-1/2 border-2 border-sky-500">
-      <h1 class='p-3 text-lg text-[#42b983]'>{{displayName}}</h1>
-      <h2 class='p-3 text-sm'>Wins: {{wins}}</h2>
-      <h2 class='p-3 text-sm'>Losses: {{losses}}</h2>
-    </div>
-    <div class="flex flex-row w-1/2 m-3">
-      <button @click="createRoom" class=" border-2 border-sky-500 button rounded bg-gray-300 p-3 w-full hover:bg-sky-500">Create Room</button>
-      <button @click="refreshRooms" class="border-2 border-sky-500 button rounded bg-gray-300 p-3 w-full hover:bg-sky-500">Refresh Rooms</button>
+  <div id="roomsDiv" class="items-center justify-center flex flex-col bg-sky-300 rounded-3xl m-5 w-3/4 m-auto mt-5 mb-5 h-auto">
+    <div class="flex flex-row justify-center w-1/2 mt-3">
+      <div ref='info' class="flex rounded-3xl bg-white m-3 flex-wrap items-center justify-center border-2 border-sky-800 p-3 w-3/5">
+        <h1 class='p-3 text-3xl text-sky-800'>{{displayName}}</h1>
+        <h2 class='p-3 text-lg'>Wins: {{wins}}</h2>
+        <h2 class='p-3 text-lg'>Losses: {{losses}}</h2>
+      </div>
+      <div class="flex flex-col w-2/5">
+        <button ref='cr' @click="createRoom" class="button rounded-3xl bg-sky-800 p-3 m-3 hover:bg-sky-500 text-sky-100 hover:text-sky-100 text-2xl">Create Room</button>
+        <button ref='rr' @click="refreshRooms" class="button rounded-3xl bg-sky-800 p-3 m-3 hover:bg-sky-500 text-sky-100 hover:text-sky-100 text-2xl">Refresh Rooms</button>
+      </div>
     </div>
     <div class="m-3 w-1/2">
-      <div v-for="room in rooms" class=" border-solid border-2 border-sky-500 rounded bg-gray-300 w-full">
-        <p class="p-5">{{room.player1.displayName}}'s room</p>
-        <input hidden="true" :ref="room.id" :placeholder="room"/>
-        <button @click="joinRoom(room)" class="rounded bg-sky-300 m-3 p-3 hover:bg-sky-500" :id="room.id">Join Room!</button>
+      <div v-for="room in rooms" class="flex flex-col rounded-3xl bg-white m-3 flex-wrap items-center w-auto border-2 border-sky-800 p-3 justify-evenly">
+        
+        <div class="w-1/2">
+          <p class='p-3 text-2xl text-sky-800'>{{room.player1.displayName}}'s room</p>
+        </div>
+
+        <div class="w-1/2">
+
+          <button @click="joinRoom(room)" class="button rounded-3xl bg-sky-800 p-3 m-3 hover:bg-sky-500 text-sky-100 hover:text-sky-100 text-2xl w-full" :id="room.id">Join Room!</button>
+        </div>
+
       </div>
     </div>
     
@@ -24,6 +33,8 @@
 <script>
   import router from '@/router';
   import axios from 'axios';
+  import { useShepherd } from 'vue-shepherd'
+  import { ref, onMounted } from 'vue'
   export default {
     name: 'WorldView',
     data() {
@@ -86,8 +97,61 @@
         console.log(newRooms)
         // console.log(newRooms[2].player1.displayName);
         this.rooms = newRooms;
-    }
+
+        if(sessionStorage.getItem("tour") == "false"){
+          tour.removeStep("curr-step1")
+          tour.removeStep("curr-step2")
+          tour.removeStep("curr-step3")
+          tour.addStep({
+            id: 'curr-step1',
+            attachTo: { element: this.$refs.info, on: 'bottom' },
+            text: 'This is your username and win/loss ratio. This will update after every game that you play.',
+            classes: 'rounded-xl bg-white p-5 m-5 w-1/6 h-1/6',
+            buttons: [
+              {
+                text: 'Next',
+                action: tour.next,
+                classes: 'bg-sky-800 rounded-xl p-5 m-5 hover:bg-sky-300 hover:text-sky-800 fixed bottom-0 right-0'
+              }
+            ]
+          });
+          tour.addStep({
+            id: 'curr-step2',
+            attachTo: { element: this.$refs.cr, on: 'bottom' },
+            text: 'This button allows you to create a new room. Other players can join you to play a game!',
+            classes: 'rounded-xl bg-white p-5 m-5 w-1/6 h-1/6',
+            buttons: [
+              {
+                text: 'Next',
+                action: tour.next,
+                classes: 'bg-sky-800 rounded-xl p-5 m-5 hover:bg-sky-300 hover:text-sky-800 fixed bottom-0 right-0'
+              }
+            ]
+          });
+          tour.addStep({
+            id: 'curr-step3',
+            attachTo: { element: this.$refs.rr, on: 'bottom' },
+            text: 'This button allows you to see already existing games!',
+            classes: 'rounded-xl bg-white p-5 m-5 w-1/6 h-1/6',
+            buttons: [
+              {
+                text: 'Next',
+                action: tour.next,
+                classes: 'bg-sky-800 rounded-xl p-5 m-5 hover:bg-sky-300 hover:text-sky-800 fixed bottom-0 right-0'
+              }
+            ]
+          });
+  
+          tour.start();
+          sessionStorage.setItem("tour", "true")
+        }
+        
+
+      }
   }
+    const tour = useShepherd({
+    useModalOverlay: true
+  });
 
 
 </script>
