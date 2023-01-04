@@ -1,4 +1,4 @@
-# ninja-jobs
+# Rock, Paper, Scissors, Lizard, Spock
 
 ## Project setup
 ```
